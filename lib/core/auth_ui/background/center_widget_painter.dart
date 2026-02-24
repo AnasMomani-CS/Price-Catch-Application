@@ -1,0 +1,26 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+
+class CenterWidgetPainter extends CustomPainter {
+  final Path path;
+  final Color shadowColor; // تعديل
+
+  const CenterWidgetPainter({
+    required this.path,
+    this.shadowColor = Colors.black26, // default
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 10
+      ..imageFilter = ImageFilter.blur(sigmaX: 10, sigmaY: 10)
+      ..color = shadowColor; // تعديل
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CenterWidgetPainter oldDelegate) => false;
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "128827474400",
+    "project_id": "pricecatch-15f21",
+    "storage_bucket": "pricecatch-15f21.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:128827474400:android:6442d696c07dcc84f06b85",
+        "android_client_info": {
+          "package_name": "com.example.pricecatch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF3_-JbtXV719LAPHfKTHdhs-m8lkR5Qs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
