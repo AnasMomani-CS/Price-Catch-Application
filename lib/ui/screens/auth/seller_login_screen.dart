@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-// استيراد ملفات المشروع الخاصة بك
-import '../../core/auth_ui/widgets/user_login_content.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/auth_ui/background/center_widget.dart';
+import 'widgets/seller_login_content.dart';
+import '../../../core/theme/app_colors.dart';
+import 'background/center_widget.dart';
 
-enum Screens { createAccount, welcomeBack }
-
-class UserLoginScreen extends StatefulWidget {
-  const UserLoginScreen({super.key});
+class SellerLoginScreen extends StatefulWidget {
+  const SellerLoginScreen({super.key});
 
   @override
-  State<UserLoginScreen> createState() => _UserLoginScreenState();
+  State<SellerLoginScreen> createState() => _SellerLoginScreenState();
 }
 
-class _UserLoginScreenState extends State<UserLoginScreen> {
-  // الـ Widget العلوي (المربع المائل)
+class _SellerLoginScreenState extends State<SellerLoginScreen> {
+  // الـ Widget العلوي (تدرجات الرمادي الاحترافية)
   Widget topWidget(double screenWidth) {
     return Transform.rotate(
       angle: -35 * math.pi / 180,
@@ -27,17 +24,14 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
           gradient: const LinearGradient(
             begin: Alignment(-0.2, -0.8),
             end: Alignment.bottomCenter,
-            colors: [
-              AppColors.userDeepDark, // البرتقالي الأغمق
-              AppColors.userPrimary, // البرتقالي الأساسي
-            ],
+            colors: [AppColors.sellerDeepDark, AppColors.sellerPrimary],
           ),
         ),
       ),
     );
   }
 
-  // الـ Widget السفلي (الدائرة)
+  // الـ Widget السفلي
   Widget bottomWidget(double screenWidth) {
     return Container(
       width: 1.5 * screenWidth,
@@ -47,7 +41,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
         gradient: LinearGradient(
           begin: Alignment(0.6, -1.1),
           end: Alignment(0.7, 0.8),
-          colors: [AppColors.userPrimary, AppColors.userDeepDark],
+          colors: [AppColors.sellerPrimary, AppColors.sellerDeepDark],
         ),
       ),
     );
@@ -58,12 +52,12 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
+      // لمنع الخطأ عند ظهور الكيبورد
       resizeToAvoidBottomInset: false,
-      // جعل الخلفية بيضاء مائلة للرمادي الفاتح ليعبر البرتقالي بوضوح
       backgroundColor: AppColors.backgroundLight,
       body: Stack(
         children: [
-          // العناصر الديكورية في الخلفية
+          // 1. الخلفية الديكورية (الدوائر)
           Positioned(top: -160, left: -30, child: topWidget(screenSize.width)),
           Positioned(
             bottom: -180,
@@ -71,13 +65,20 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
             child: bottomWidget(screenSize.width),
           ),
 
-          // 3. باقي المحتوى
+          // 3. الـ CenterWidget الخلفي
           CenterWidget(
             size: screenSize,
-            color1: AppColors.userLight,
-            color2: AppColors.userLight,
+            color1: AppColors.sellerLight,
+            color2: AppColors.sellerLight,
           ),
-          const SingleChildScrollView(child: UserLoginContent()),
+
+          // 4. المحتوى الأساسي مع حل مشكلة الـ RenderBox
+          SingleChildScrollView(
+            child: SizedBox(
+              height: screenSize.height, // إعطاء حجم ثابت للمحتوى الداخلي
+              child: const SellerLoginContent(),
+            ),
+          ),
         ],
       ),
     );

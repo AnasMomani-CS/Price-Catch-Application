@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../screens/auth/reset_password_screen.dart';
-import '../../../screens/auth/user_seller_choice.dart';
-import '../../enums/auth_role.dart';
-import '../../theme/app_colors.dart';
+import '../reset_password_screen.dart';
+import '../user_seller_choice.dart';
+import '../../../../core/enums/auth_role.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../animations/change_screen_animation_seller.dart';
 import 'top_text.dart';
 import 'bottom_text.dart';

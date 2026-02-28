@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../enums/auth_role.dart';
-import '../../theme/app_colors.dart';
+import '../../../../core/enums/auth_role.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../animations/change_screen_animation_user.dart';
 import '../animations/change_screen_animation_seller.dart';
 

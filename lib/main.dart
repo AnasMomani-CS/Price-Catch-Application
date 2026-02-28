@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // الملف اللي تولّد تلقائياً من FlutterFire CLI
-import 'screens/splash/splash_screen.dart';
+import 'ui/screens/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

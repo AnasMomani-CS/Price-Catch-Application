@@ -2,9 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:price_catch_project/screens/auth/user_seller_choice.dart';
-import 'package:price_catch_project/screens/user/home_screen.dart';
-import 'package:price_catch_project/screens/seller/seller_home_screen.dart';
+import 'package:price_catch_project/ui/screens/auth/user_seller_choice.dart';
+import 'package:price_catch_project/ui/screens/user/home_screen.dart';
+import 'package:price_catch_project/ui/screens/seller/seller_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
