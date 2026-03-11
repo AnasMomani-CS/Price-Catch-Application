@@ -21,7 +21,7 @@ class TopText extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        // التحقق من حالة اللوجن بناءً على الـ Enum الخاص بكل طرف
+        // التحقق من حالة اللوجن بناءً على Enum الخاص بكل طرف
         final bool isLogin = isUser
             ? ChangeScreenAnimationUser.currentScreen == UserAuthState.login
             : ChangeScreenAnimationSeller.currentScreen ==

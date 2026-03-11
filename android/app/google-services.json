@@ -12,7 +12,20 @@
           "package_name": "com.example.pricecatch"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "128827474400-2a0v14vi6ubori0q157q1485kvsgfs07.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pricecatch",
+            "certificate_hash": "e7d8371185500826db3544eba24b449d3d2185a3"
+          }
+        },
+        {
+          "client_id": "128827474400-occqls9e2khrdhpeieearpk467g79nkt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAF3_-JbtXV719LAPHfKTHdhs-m8lkR5Qs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "128827474400-occqls9e2khrdhpeieearpk467g79nkt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "128827474400-khc3iom6n2kud7blsn9kfaejqscaqp7b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.priceCatchProject"
+              }
+            }
+          ]
         }
       }
     }

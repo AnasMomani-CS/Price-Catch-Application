@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/enums/auth_role.dart'; // تأكد أن ملف الـ Enum يحتوي على UserAuthState
 
 class ChangeScreenAnimationUser {
+  static late AnimationController controller;
   static late AnimationController topTextController;
   static late Animation<Offset> topTextAnimation;
   static late AnimationController bottomTextController;
@@ -29,22 +30,22 @@ class ChangeScreenAnimationUser {
       vsync: vsync,
       duration: const Duration(milliseconds: 300),
     );
-    topTextAnimation = Tween(begin: Offset.zero, end: const Offset(-1.2, 0))
-        .animate(
-          CurvedAnimation(parent: topTextController, curve: Curves.easeInOut),
-        );
+    topTextAnimation =
+        Tween(begin: Offset.zero, end: const Offset(-1.2, 0)).animate(
+      CurvedAnimation(parent: topTextController, curve: Curves.easeInOut),
+    );
 
     bottomTextController = AnimationController(
       vsync: vsync,
       duration: const Duration(milliseconds: 300),
     );
-    bottomTextAnimation = Tween(begin: Offset.zero, end: const Offset(0, 1.7))
-        .animate(
-          CurvedAnimation(
-            parent: bottomTextController,
-            curve: Curves.easeInOut,
-          ),
-        );
+    bottomTextAnimation =
+        Tween(begin: Offset.zero, end: const Offset(0, 1.7)).animate(
+      CurvedAnimation(
+        parent: bottomTextController,
+        curve: Curves.easeInOut,
+      ),
+    );
 
     // 2. خانات الـ Sign up لليوزر تبدأ من خارج الشاشة (جهة اليسار)
     createAccountControllers.clear();

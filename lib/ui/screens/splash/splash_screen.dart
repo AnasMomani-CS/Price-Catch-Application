@@ -1,10 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:price_catch_project/ui/screens/auth/user_seller_choice.dart';
-import 'package:price_catch_project/ui/screens/user/home_screen.dart';
-import 'package:price_catch_project/ui/screens/seller/seller_home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,13 +27,12 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     );
-    _logoAnimation =
-        Tween<Offset>(
-          begin: const Offset(-1.0, 0),
-          end: const Offset(0, 0),
-        ).animate(
-          CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
-        );
+    _logoAnimation = Tween<Offset>(
+      begin: const Offset(-1.0, 0),
+      end: const Offset(0, 0),
+    ).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
+    );
     _logoController.forward();
 
     // الاسم يتحرك من اليمين → جنب اللوغو
@@ -50,8 +44,9 @@ class _SplashScreenState extends State<SplashScreen>
       begin: const Offset(1.0, 0),
       end: const Offset(0, 0),
     ).animate(_appNameController);
+
     Future.delayed(const Duration(milliseconds: 900), () {
-      _appNameController.forward();
+      if (mounted) _appNameController.forward();
     });
 
     // النص العربي يظهر تدريجيًا
@@ -59,57 +54,23 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
+
     Future.delayed(const Duration(milliseconds: 2300), () {
-      _textController.forward();
+      if (mounted) _textController.forward();
     });
 
-    // وقت كافي للمشاهدة ثم الانتقال
-    Future.delayed(const Duration(seconds: 7), () {
+    // وقت كافي للمشاهدة ثم الانتقال  AuthWrapper
+    // قللت الوقت لـ 5 ثواني عشان اليوزر ما يمل 
+    Future.delayed(const Duration(seconds: 5), () {
       if (!mounted) return;
       _navigateAfterSplash();
     });
   }
 
-  Future<void> _navigateAfterSplash() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const UserSellerChoiceScreen()),
-      );
-    } else {
-      try {
-        final docUser = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        final docSeller = await FirebaseFirestore.instance
-            .collection('sellers')
-            .doc(user.uid)
-            .get();
-        if (docUser.exists) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const UserHomeScreen()),
-          );
-        } else if (docSeller.exists) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const SellerHomeScreen()),
-          );
-        } else {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const UserSellerChoiceScreen()),
-          );
-        }
-      } catch (e) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const UserSellerChoiceScreen()),
-        );
-      }
-    }
+  void _navigateAfterSplash() {
+    // التعديل الجوهري هنا:
+    // ننتقل للـ AuthWrapper الموجود في الـ main.dart وهو اللي بقرر وين يروح اليوزر
+    Navigator.pushReplacementNamed(context, '/auth_wrapper');
   }
 
   @override
@@ -124,7 +85,6 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    // الأحجام المناسبة للشاشة
     double logoWidth = screenWidth * 0.35;
     double appNameWidth = screenWidth * 0.45;
 
@@ -134,7 +94,6 @@ class _SplashScreenState extends State<SplashScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Row تحتوي اللوغو والاسم جنب بعض
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -154,10 +113,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ],
             ),
-
             const SizedBox(height: 30),
-
-            // النص العربي يظهر تدريجيًا
             FadeTransition(
               opacity: _textController,
               child: Text(

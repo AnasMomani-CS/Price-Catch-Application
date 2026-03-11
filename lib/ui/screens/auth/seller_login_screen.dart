@@ -12,7 +12,7 @@ class SellerLoginScreen extends StatefulWidget {
 }
 
 class _SellerLoginScreenState extends State<SellerLoginScreen> {
-  // الـ Widget العلوي (تدرجات الرمادي الاحترافية)
+  // Widget العلوي 
   Widget topWidget(double screenWidth) {
     return Transform.rotate(
       angle: -35 * math.pi / 180,
@@ -31,7 +31,7 @@ class _SellerLoginScreenState extends State<SellerLoginScreen> {
     );
   }
 
-  // الـ Widget السفلي
+  // Widget السفلي
   Widget bottomWidget(double screenWidth) {
     return Container(
       width: 1.5 * screenWidth,
@@ -52,12 +52,11 @@ class _SellerLoginScreenState extends State<SellerLoginScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      // لمنع الخطأ عند ظهور الكيبورد
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.backgroundLight,
       body: Stack(
         children: [
-          // 1. الخلفية الديكورية (الدوائر)
+          // الخلفية الديكورية (الدوائر)
           Positioned(top: -160, left: -30, child: topWidget(screenSize.width)),
           Positioned(
             bottom: -180,
@@ -65,17 +64,17 @@ class _SellerLoginScreenState extends State<SellerLoginScreen> {
             child: bottomWidget(screenSize.width),
           ),
 
-          // 3. الـ CenterWidget الخلفي
+          // CenterWidget الخلفي
           CenterWidget(
             size: screenSize,
             color1: AppColors.sellerLight,
             color2: AppColors.sellerLight,
           ),
 
-          // 4. المحتوى الأساسي مع حل مشكلة الـ RenderBox
+          // المحتوى الأساسي مع حل مشكلة  RenderBox
           SingleChildScrollView(
             child: SizedBox(
-              height: screenSize.height, // إعطاء حجم ثابت للمحتوى الداخلي
+              height: screenSize.height, 
               child: const SellerLoginContent(),
             ),
           ),

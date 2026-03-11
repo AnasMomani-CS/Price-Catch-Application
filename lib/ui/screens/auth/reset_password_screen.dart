@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../providers/auth_provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
@@ -11,11 +13,8 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final TextEditingController emailController = TextEditingController();
-
-  // متغير لتحديد الرتبة (User هو الافتراضي)
   String selectedRole = 'User';
 
-  // الدائرة العلوية
   Widget topWidget(double screenWidth) {
     return Transform.rotate(
       angle: -35 * math.pi / 180,
@@ -55,6 +54,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
@@ -80,7 +80,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             right: -screenSize.width * 0.1,
             child: bottomWidget(screenSize.width),
           ),
-
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -90,10 +89,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      height: screenSize.height * 0.08,
-                    ), // رفعنا العنوان شوي
-
+                    SizedBox(height: screenSize.height * 0.08),
                     const Text(
                       "Reset\nPassword",
                       style: TextStyle(
@@ -105,8 +101,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-
-                    // الكارت الأبيض
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -122,7 +116,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       child: Column(
                         children: [
-                          // الأيقونة والنص الأساسي زي ما طلبت
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -142,34 +135,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 25),
-
-                          // ⭐ إضافة أزرار اختيار الرتبة (User / Seller)
                           Row(
                             children: [
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () =>
-                                      setState(() => selectedRole = 'User'),
+                                  onTap: () => setState(() => selectedRole = 'User'),
                                   child: Container(
                                     height: 45,
                                     decoration: BoxDecoration(
-                                      color: selectedRole == 'User'
-                                          ? AppColors.userPrimary
-                                          : Colors.grey[100],
+                                      color: selectedRole == 'User' ? AppColors.userPrimary : Colors.grey[100],
                                       borderRadius: BorderRadius.circular(30),
-                                      border: Border.all(
-                                        color: selectedRole == 'User'
-                                            ? AppColors.userPrimary
-                                            : Colors.grey[300]!,
-                                      ),
+                                      border: Border.all(color: selectedRole == 'User' ? AppColors.userPrimary : Colors.grey[300]!),
                                     ),
                                     alignment: Alignment.center,
                                     child: Text(
                                       "User",
                                       style: TextStyle(
-                                        color: selectedRole == 'User'
-                                            ? Colors.white
-                                            : Colors.grey[600],
+                                        color: selectedRole == 'User' ? Colors.white : Colors.grey[600],
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -179,28 +161,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: GestureDetector(
-                                  onTap: () =>
-                                      setState(() => selectedRole = 'Seller'),
+                                  onTap: () => setState(() => selectedRole = 'Seller'),
                                   child: Container(
                                     height: 45,
                                     decoration: BoxDecoration(
-                                      color: selectedRole == 'Seller'
-                                          ? AppColors.sellerPrimary
-                                          : Colors.grey[100],
+                                      color: selectedRole == 'Seller' ? AppColors.sellerPrimary : Colors.grey[100],
                                       borderRadius: BorderRadius.circular(30),
-                                      border: Border.all(
-                                        color: selectedRole == 'Seller'
-                                            ? AppColors.sellerPrimary
-                                            : Colors.grey[300]!,
-                                      ),
+                                      border: Border.all(color: selectedRole == 'Seller' ? AppColors.sellerPrimary : Colors.grey[300]!),
                                     ),
                                     alignment: Alignment.center,
                                     child: Text(
                                       "Seller",
                                       style: TextStyle(
-                                        color: selectedRole == 'Seller'
-                                            ? Colors.white
-                                            : Colors.grey[600],
+                                        color: selectedRole == 'Seller' ? Colors.white : Colors.grey[600],
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -210,8 +183,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             ],
                           ),
                           const SizedBox(height: 25),
-
-                          // TextField
                           Material(
                             elevation: 5,
                             shadowColor: Colors.black12,
@@ -221,34 +192,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 hintText: 'Email Address',
-                                prefixIcon: const Icon(
-                                  Icons.email_outlined,
-                                  color: AppColors.sellerPrimary,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  borderSide: BorderSide.none,
-                                ),
+                                prefixIcon: const Icon(Icons.email_outlined, color: AppColors.sellerPrimary),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
                                 filled: true,
                                 fillColor: Colors.white,
                               ),
                             ),
                           ),
                           const SizedBox(height: 25),
-
-                          // Button
                           SizedBox(
                             width: double.infinity,
                             height: 55,
                             child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(30),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    AppColors.userPrimary,
-                                    AppColors.sellerPrimary,
-                                  ],
-                                ),
+                                gradient: const LinearGradient(colors: [AppColors.userPrimary, AppColors.sellerPrimary]),
                               ),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -256,65 +214,42 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   shadowColor: Colors.transparent,
                                   shape: const StadiumBorder(),
                                 ),
-                                onPressed: () async {
-                                  // ⭐ شرط التحقق من الإيميل
+                                onPressed: authProvider.isLoading 
+                                ? null 
+                                : () async {
                                   String email = emailController.text.trim();
                                   if (email.isEmpty || !email.contains('@')) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "Please enter a valid email containing '@'",
-                                        ),
-                                        backgroundColor: Colors.redAccent,
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
+                                      const SnackBar(content: Text("Please enter a valid email containing '@'"), backgroundColor: Colors.redAccent),
                                     );
-                                    return; // توقف العملية هنا
+                                    return;
                                   }
 
-                                  // إذا الإيميل صحيح:
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        "Sending link to $selectedRole...",
-                                      ),
-                                      backgroundColor: Colors.black87,
-                                    ),
-                                  );
-
-                                  await Future.delayed(
-                                    const Duration(seconds: 2),
-                                  );
-
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(
-                                      context,
-                                    ).hideCurrentSnackBar();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          "Link sent successfully to $selectedRole!",
-                                        ),
-                                        backgroundColor: Colors.green,
-                                      ),
-                                    );
+                                  try {
+                                    await authProvider.resetPassword(email);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text("Reset link sent successfully to $email"), backgroundColor: Colors.green),
+                                      );
+                                      Navigator.pop(context);
+                                    }
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+                                      );
+                                    }
                                   }
                                 },
-                                child: const Text(
-                                  "SEND LINK",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
+                                child: authProvider.isLoading 
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : const Text("SEND LINK", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // مساحة إضافية عشان السكرول يريح اليوزر لما يفتح الكيبورد
                     const SizedBox(height: 250),
                   ],
                 ),

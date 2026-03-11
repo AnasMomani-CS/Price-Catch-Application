@@ -11,8 +11,8 @@ class CenterWidget extends StatelessWidget {
   const CenterWidget({
     super.key,
     required this.size,
-    required this.color1, // تعديل
-    required this.color2, // تعديل
+    required this.color1,
+    required this.color2, 
   });
 
   @override

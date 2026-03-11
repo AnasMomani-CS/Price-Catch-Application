@@ -17,7 +17,7 @@ class HelperFunctions {
         : AppColors.sellerDeepDark;
   }
 
-  // جلب اللون الأفتح (لخلفيات العناصر الصغيرة أو الـ Containers)
+  // جلب اللون الأفتح (لخلفيات العناصر الصغيرة أو  Containers)
   static Color getLightColor(AuthRole role) {
     return role == AuthRole.user ? AppColors.userLight : AppColors.sellerLight;
   }

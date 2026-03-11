@@ -1,4 +1,4 @@
-package com.example.price_catch_project
+package com.example.pricecatch
 
 import io.flutter.embedding.android.FlutterActivity
 

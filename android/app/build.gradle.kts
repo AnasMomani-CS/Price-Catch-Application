@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.price_catch_project"
+    namespace = "com.example.pricecatch"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,11 +23,14 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.pricecatch"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        
+        // رفعنا الـ minSdk لـ 21 لحل مشاكل التوافق مع Firebase و MultiDex تلقائياً
+        minSdk = flutter.minSdkVersion 
+        
+        // تفعيل الـ MultiDex بلغة Kotlin DSL
+        multiDexEnabled = true
+        
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -35,8 +38,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -44,4 +45,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation("androidx.multidex:multidex:2.0.1")
 }

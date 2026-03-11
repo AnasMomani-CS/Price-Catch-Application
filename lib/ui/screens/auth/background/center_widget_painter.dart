@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CenterWidgetPainter extends CustomPainter {
   final Path path;
-  final Color shadowColor; // تعديل
+  final Color shadowColor;
 
   const CenterWidgetPainter({
     required this.path,
@@ -16,7 +16,7 @@ class CenterWidgetPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 10
       ..imageFilter = ImageFilter.blur(sigmaX: 10, sigmaY: 10)
-      ..color = shadowColor; // تعديل
+      ..color = shadowColor;
 
     canvas.drawPath(path, paint);
   }

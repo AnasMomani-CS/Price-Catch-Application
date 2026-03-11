@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-// استيراد ملفات المشروع الخاصة بك
 import 'widgets/user_login_content.dart';
 import '../../../core/theme/app_colors.dart';
 import 'background/center_widget.dart';
@@ -15,7 +14,7 @@ class UserLoginScreen extends StatefulWidget {
 }
 
 class _UserLoginScreenState extends State<UserLoginScreen> {
-  // الـ Widget العلوي (المربع المائل)
+  // Widget العلوي (المربع المائل)
   Widget topWidget(double screenWidth) {
     return Transform.rotate(
       angle: -35 * math.pi / 180,
@@ -37,7 +36,7 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
     );
   }
 
-  // الـ Widget السفلي (الدائرة)
+  // Widget السفلي (الدائرة)
   Widget bottomWidget(double screenWidth) {
     return Container(
       width: 1.5 * screenWidth,
@@ -59,7 +58,6 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // جعل الخلفية بيضاء مائلة للرمادي الفاتح ليعبر البرتقالي بوضوح
       backgroundColor: AppColors.backgroundLight,
       body: Stack(
         children: [
@@ -71,7 +69,6 @@ class _UserLoginScreenState extends State<UserLoginScreen> {
             child: bottomWidget(screenSize.width),
           ),
 
-          // 3. باقي المحتوى
           CenterWidget(
             size: screenSize,
             color1: AppColors.userLight,

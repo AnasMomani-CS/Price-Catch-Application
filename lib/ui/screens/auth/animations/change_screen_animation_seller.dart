@@ -88,7 +88,7 @@ class ChangeScreenAnimationSeller {
     topTextController.forward();
     await bottomTextController.forward();
 
-    // تحديث الحالة لـ signup أثناء اختفاء العناوين
+    // تحديث الحالة signup أثناء اختفاء العناوين
     currentScreen = SellerAuthState.signup; 
 
     for (var i = 0; i < loginControllers.length; i++) {
@@ -112,7 +112,7 @@ class ChangeScreenAnimationSeller {
     topTextController.forward();
     await bottomTextController.forward();
 
-    // إرجاع الحالة لـ login
+    // إرجاع الحالة login
     currentScreen = SellerAuthState.login; 
 
     for (var i = createAccountControllers.length - 1; i >= 0; i--) {
