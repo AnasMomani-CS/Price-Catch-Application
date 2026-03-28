@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:price_catch_project/ui/screens/seller/seller_dashboard.dart';
 import 'package:provider/provider.dart';
-import '../../seller/seller_profile_screen.dart';
 import '../reset_password_screen.dart';
 import '../user_seller_choice.dart';
 import '../../../../core/enums/auth_role.dart';
@@ -149,7 +149,7 @@ class _SellerLoginContentState extends State<SellerLoginContent>
             ),
           ),
 
-          Positioned(top: 120, left: 30, child: TopText(role: AuthRole.seller)),
+          const Positioned(top: 120, left: 30, child: TopText(role: AuthRole.seller)),
 
           Padding(
             padding: const EdgeInsets.only(top: 240),
@@ -230,7 +230,7 @@ class _SellerLoginContentState extends State<SellerLoginContent>
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const SellerProfileScreen()),
+                                        const SellerDashboardScreen()),
                                 (route) => false,
                               );
                             } else if (authProvider.errorMessage != null &&
@@ -332,7 +332,7 @@ class _SellerLoginContentState extends State<SellerLoginContent>
             ),
           ),
 
-          Positioned(
+          const Positioned(
             bottom: 60,
             left: 0,
             right: 0,

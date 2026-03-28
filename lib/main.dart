@@ -2,25 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'data/services/notification_service.dart';
 import 'firebase_options.dart';
 import 'providers/auth_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/profile_provider.dart';
+import 'providers/offers_provider.dart';
+import 'providers/products_provider.dart';
+import 'providers/catches_provider.dart';
+import 'providers/search_provider.dart';
+import 'ui/screens/seller/seller_dashboard.dart';
 import 'ui/screens/splash/splash_screen.dart';
 import 'ui/screens/auth/user_seller_choice.dart';
-import 'ui/screens/user/user_profile_screen.dart';
-import 'ui/screens/seller/seller_profile_screen.dart';
+import 'ui/screens/user/user_main_layout.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 1. تشغيل الفايربيس
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await NotificationService.init();
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => CatchesProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => OffersProvider()),
+        ChangeNotifierProvider(create: (_) => ProductsProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
       ],
       child: const PriceCatchApp(),
     ),
@@ -104,9 +117,9 @@ class AuthWrapper extends StatelessWidget {
               }
 
               if (roleSnapshot.data == 'seller') {
-                return const SellerProfileScreen();
+                return const SellerDashboardScreen();
               } else {
-                return const UserProfileScreen();
+                return const UserMainLayout();
               }
             },
           );

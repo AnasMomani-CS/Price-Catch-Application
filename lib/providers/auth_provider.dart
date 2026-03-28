@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:price_catch_project/core/enums/auth_role.dart' show AuthRole;
@@ -12,11 +12,13 @@ class AuthProvider with ChangeNotifier {
   AuthRole? _role;
   bool _isLoading = false;
   String? _errorMessage;
+  String _storeStatus = 'Closed';
 
   User? get user => _user;
   AuthRole? get role => _role;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String get storeStatus => _storeStatus;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -73,6 +75,7 @@ class AuthProvider with ChangeNotifier {
           userData['phoneNumber'] = '';
           userData['address'] = '';
           userData['description'] = '';
+          userData['storeStatus'] = 'Closed';
         }
 
         String collectionPath = (role == AuthRole.user) ? 'users' : 'sellers';
@@ -136,14 +139,13 @@ class AuthProvider with ChangeNotifier {
       _user = userCredential.user;
 
       if (_user != null) {
-        //  التأكد من الرتبة أولاً قبل اتخاذ أي قرار
         await _fetchUserRole(_user!.uid);
+        String collection = (_role != null)
+            ? (_role == AuthRole.user ? 'users' : 'sellers')
+            : (preferredRole == AuthRole.user ? 'users' : 'sellers');
 
-        // لا يتم إنشاء بيانات جديدة إلا إذا كان المستخدم غير موجود فعلياً
         if (_role == null) {
-          String collection =
-              (preferredRole == AuthRole.user) ? 'users' : 'sellers';
-
+          // مستخدم جديد
           Map<String, dynamic> data = {
             'uid': _user!.uid,
             'name': _user!.displayName ?? 'New User',
@@ -158,14 +160,15 @@ class AuthProvider with ChangeNotifier {
             data['phoneNumber'] = _user!.phoneNumber ?? '';
             data['address'] = '';
             data['description'] = '';
+            data['storeStatus'] = 'Closed';
           }
 
-          // استخدام merge: true لضمان الأمان التام
           await _db
               .collection(collection)
               .doc(_user!.uid)
               .set(data, SetOptions(merge: true));
           _role = preferredRole;
+          if (preferredRole == AuthRole.seller) _storeStatus = 'Closed';
         }
       }
       return true;
@@ -187,8 +190,15 @@ class AuthProvider with ChangeNotifier {
         var sellerDoc = await _db.collection('sellers').doc(uid).get();
         if (sellerDoc.exists) {
           _role = AuthRole.seller;
+
+          var data = sellerDoc.data();
+          if (data != null && data.containsKey('storeStatus')) {
+            _storeStatus = data['storeStatus'];
+          } else {
+            _storeStatus = 'Closed';
+          }
         } else {
-          _role = null; // للتأكد من حالة المستخدم الجديد
+          _role = null;
         }
       }
     } catch (e) {
@@ -282,14 +292,15 @@ class AuthProvider with ChangeNotifier {
             data['category'] = '';
             data['address'] = '';
             data['description'] = '';
+            data['storeStatus'] = 'Closed';
           }
 
-          // استخدام merge: true لضمان عدم حذف البيانات
           await _db
               .collection(collection)
               .doc(_user!.uid)
               .set(data, SetOptions(merge: true));
           _role = preferredRole;
+          if (preferredRole == AuthRole.seller) _storeStatus = 'Closed';
         }
       }
       return true;
@@ -307,7 +318,25 @@ class AuthProvider with ChangeNotifier {
     await GoogleSignIn().signOut();
     _user = null;
     _role = null;
+    _storeStatus = 'Closed';
     notifyListeners();
+  }
+
+  Future<bool> updateStoreStatus(String newStatus) async {
+    if (_user == null || _role != AuthRole.seller) return false;
+
+    try {
+      await _db.collection('sellers').doc(_user!.uid).update({
+        'storeStatus': newStatus,
+      });
+
+      _storeStatus = newStatus;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint("Error updating store status: $e");
+      return false;
+    }
   }
 
   String _handleAuthError(dynamic e) {

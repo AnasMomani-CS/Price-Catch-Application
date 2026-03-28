@@ -7,6 +7,7 @@ import '../../../providers/profile_provider.dart';
 import '../../../providers/settings_provider.dart';
 import '../auth/widgets/settings_switch.dart';
 import '../auth/user_login_screen.dart';
+import 'my_catches_screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -148,7 +149,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
             left: 20,
             right: 20,
-            top: 20),
+            top: 25),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,6 +168,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 hintText: "${t('edit')} $label",
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Colors.orange, width: 2),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -174,7 +179,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12))),
                 onPressed: () async {
                   if (controller.text.trim().isEmpty) return;
                   bool success = await profileProv.updateSingleField(
@@ -186,7 +194,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   if (success && mounted) Navigator.pop(context);
                 },
                 child: Text(t('save'),
-                    style: const TextStyle(color: Colors.white)),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
             const SizedBox(height: 20),
@@ -217,7 +226,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             : SingleChildScrollView(
                 child: Column(
                   children: [
-                    // تم التعديل هنا لعدم تمرير photoUrl حيث سنتعامل معه داخل الـ Consumer
                     _buildHeaderWithImage(context, user?.name, t),
                     const SizedBox(height: 60),
                     _buildSectionTitle(t('my_info')),
@@ -226,7 +234,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     _buildThemesCard(context, t),
                     _buildSectionTitle(t('more')),
                     _buildAboutCard(context, t),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 120),
                   ],
                 ),
               ),
@@ -234,7 +242,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  // --- تم تحديث منطق الرفع وإضافة Consumer هنا ---
   Widget _buildHeaderWithImage(
       BuildContext context, String? name, String Function(String) t) {
     return Stack(
@@ -274,15 +281,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 55,
-                        backgroundColor: Theme.of(context).cardColor,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         child: CircleAvatar(
                           radius: 50,
                           backgroundColor: Colors.grey[200],
-                          // הـ ValueKey يضمن تحديث الصورة من الرابط الجديد فوراً
                           key: ValueKey(currentPhotoUrl),
+                          // 🟢 التعديل الوحيد هنا: تبسيط عرض الصورة لدعم الروابط المباشرة فقط
                           backgroundImage: (currentPhotoUrl != null &&
                                   currentPhotoUrl.isNotEmpty)
-                              ? NetworkImage(currentPhotoUrl)
+                              ? NetworkImage(currentPhotoUrl) as ImageProvider
                               : null,
                           child: profileProv.isLoading
                               ? const CircularProgressIndicator(
@@ -309,7 +317,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                                   context,
                                   listen: false);
                               if (authProv.user != null) {
-                                // الرفع يجلب البيانات وحدثها تلقائياً داخل ה Provider
                                 bool success =
                                     await profileProv.uploadProfileImage(
                                   uid: authProv.user!.uid,
@@ -318,9 +325,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
                                 if (success && mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            "Profile picture updated successfully!")),
+                                    SnackBar(
+                                        content: Text(t(
+                                            'Profile picture updated successfully!'))),
                                   );
                                 }
                               }
@@ -349,18 +356,28 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ]),
       child: Column(
         children: [
           _buildEditableField(t('name'), user?.name ?? "Not Set",
               Icons.person_outline, "name", t),
+          const Divider(height: 1, indent: 60),
           _buildEditableField(t('email'), user?.email ?? "Not Set",
               Icons.email_outlined, "email", t,
               canEdit: false),
+          const Divider(height: 1, indent: 60),
           _buildEditableField(t('phone'), user?.phoneNumber ?? "Not Set",
               Icons.phone_android, "phoneNumber", t),
+          const Divider(height: 1, indent: 60),
           _buildEditableField(
               t('gender'), user?.gender ?? "Not Set", Icons.male, "gender", t),
+          const Divider(height: 1, indent: 60),
           _buildEditableField(t('birth'), user?.birthDate ?? "Not Set",
               Icons.calendar_today, "birthDate", t),
         ],
@@ -375,7 +392,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
+            color: Colors.orange.withOpacity(0.15),
             borderRadius: BorderRadius.circular(8)),
         child: Icon(icon, color: Colors.orange, size: 20),
       ),
@@ -398,15 +415,25 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ]),
       child: Column(
         children: [
           ListTile(
             leading:
                 const Icon(Icons.local_offer_outlined, color: Colors.orange),
             title: Text(t('my_catches')),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.grey),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const MyCatchesScreen()));
+            },
           ),
           const Divider(height: 1, indent: 50),
           const SettingsSwitch(
@@ -427,7 +454,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ]),
       child: Column(
         children: [
           ListTile(
@@ -438,7 +471,9 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           const Divider(height: 1, indent: 50),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
-            title: Text(t('logout'), style: const TextStyle(color: Colors.red)),
+            title: Text(t('logout'),
+                style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.bold)),
             onTap: () async {
               await authProv.signOut();
               if (mounted) {

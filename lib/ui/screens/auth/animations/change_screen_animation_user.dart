@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/enums/auth_role.dart'; // تأكد أن ملف الـ Enum يحتوي على UserAuthState
-
+import '../../../../core/enums/auth_role.dart'; 
 class ChangeScreenAnimationUser {
   static late AnimationController controller;
   static late AnimationController topTextController;

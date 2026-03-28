@@ -35,7 +35,7 @@ class SettingsSwitch extends StatelessWidget {
             )
           : Switch(
               value: settings.isDarkMode,
-              activeColor: Colors.orange[800], // لون يتناسب مع براند Price Catch
+              activeThumbColor: Colors.orange[800], // لون يتناسب مع براند Price Catch
               onChanged: (value) => settings.toggleTheme(value),
             ),
     );

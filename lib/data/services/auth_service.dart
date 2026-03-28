@@ -72,7 +72,7 @@ class AuthService {
     await _db.collection(collectionName).doc(cred.user!.uid).set(profileData);
   }
 
-  //  تسجيل الدخول برقم الهاتف (إرسال الكود) 
+  //  تسجيل الدخول برقم الهاتف 
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required Function(PhoneAuthCredential) verificationCompleted,

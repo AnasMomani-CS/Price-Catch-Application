@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import '../data/models/user_model.dart';
+import '../data/models/seller_model.dart';
+import '../data/services/cloudinary_service.dart';
 
 class ProfileProvider with ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -25,7 +25,7 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  //  تخزين بيانات البروفايل 
+  // جلب بيانات البروفايل
   Future<void> fetchProfile(String uid, String role) async {
     _isLoading = true;
     _clearError();
@@ -40,7 +40,7 @@ class ProfileProvider with ChangeNotifier {
         if (role == 'user') {
           _userProfile = UserProfile.fromMap(data);
         } else {
-          _sellerProfile = SellerProfile.fromMap(data);
+          _sellerProfile = SellerProfile.fromMap(data, uid);
         }
       }
     } catch (e) {
@@ -51,7 +51,7 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  //  رفع صورة البروفايل
+  // رفع صورة البروفايل
   Future<bool> uploadProfileImage({
     required String uid,
     required String role,
@@ -69,34 +69,22 @@ class ProfileProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      File file = File(pickedFile.path);
-      String folder = (role == 'user') ? 'users' : 'sellers';
+      String? imageUrl = await CloudinaryService.uploadImage(pickedFile.path);
 
-      // مرجع الصورة في التخزين
-      Reference ref = _storage
-          .ref()
-          .child('profile_images')
-          .child(folder)
-          .child('$uid.jpg');
+      if (imageUrl == null) {
+        _errorMessage = "Failed to upload image to Cloudinary.";
+        return false;
+      }
 
-      // الرفع
-      UploadTask uploadTask = ref.putFile(file);
-      TaskSnapshot snapshot = await uploadTask;
-      String downloadUrl = await snapshot.ref.getDownloadURL();
-
-      // Timestamp
-      String timestampUrl =
-          "$downloadUrl&t=${DateTime.now().millisecondsSinceEpoch}";
-
-      // التحديث في Firestore 
       return await updateSingleField(
         uid: uid,
         role: role,
         fieldKey: 'photoUrl',
-        value: timestampUrl,
+        value: imageUrl,
       );
     } catch (e) {
       _errorMessage = "Image upload failed: $e";
+      debugPrint("Upload Error: $e");
       return false;
     } finally {
       _isLoading = false;
@@ -104,7 +92,7 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
-  //  تحديث حقل ديناميكياً 
+  // تحديث حقل ديناميكياً
   Future<bool> updateSingleField({
     required String uid,
     required String role,
@@ -118,13 +106,11 @@ class ProfileProvider with ChangeNotifier {
     try {
       String collection = (role == 'user') ? 'users' : 'sellers';
 
-      // استخدام set مع merge: true لضمان تحديث الحقل دون المساس ببقية البيانات
       await _db.collection(collection).doc(uid).set(
         {fieldKey: value},
         SetOptions(merge: true),
       );
 
-      // تحديث الحالة المحلية (Local State) فوراً ليعكس التغيير في الواجهة
       if (role == 'user') {
         if (_userProfile != null) {
           _userProfile = _userProfile!.copyWithField(fieldKey, value);
@@ -150,6 +136,41 @@ class ProfileProvider with ChangeNotifier {
     }
   }
 
+  // زيادة عداد مشاهدات المتجر
+  Future<void> incrementStoreViews(String sellerUid) async {
+    try {
+      await _db.collection('sellers').doc(sellerUid).update({
+        'viewsCount': FieldValue.increment(1),
+      });
+      if (_sellerProfile != null && _sellerProfile!.uid == sellerUid) {
+        _sellerProfile = _sellerProfile!.copyWith(
+          viewsCount: _sellerProfile!.viewsCount + 1,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error incrementing store views: $e");
+    }
+  }
+
+  // زيادة عداد زيارات المتجر
+  Future<void> incrementStoreVisits(String sellerUid) async {
+    try {
+      await _db.collection('sellers').doc(sellerUid).update({
+        'storeVisits': FieldValue.increment(1),
+      });
+
+      if (_sellerProfile != null && _sellerProfile!.uid == sellerUid) {
+        _sellerProfile = _sellerProfile!.copyWith(
+          storeVisits: _sellerProfile!.storeVisits + 1,
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint("Error incrementing store visits: $e");
+    }
+  }
+
   void clearProfile() {
     _userProfile = null;
     _sellerProfile = null;
@@ -158,10 +179,10 @@ class ProfileProvider with ChangeNotifier {
   }
 }
 
-//  التوسعات (Extensions)
+// التوسعات (Extensions)
 extension UserProfileExt on UserProfile {
   UserProfile copyWithField(String key, dynamic value) {
-    Map<String, dynamic> map = this.toMap();
+    Map<String, dynamic> map = toMap();
     map[key] = value;
     return UserProfile.fromMap(map);
   }
@@ -169,8 +190,8 @@ extension UserProfileExt on UserProfile {
 
 extension SellerProfileExt on SellerProfile {
   SellerProfile copyWithField(String key, dynamic value) {
-    Map<String, dynamic> map = this.toMap();
+    Map<String, dynamic> map = toMap();
     map[key] = value;
-    return SellerProfile.fromMap(map);
+    return SellerProfile.fromMap(map, uid);
   }
 }

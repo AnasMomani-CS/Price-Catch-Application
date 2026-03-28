@@ -1,3 +1,5 @@
+// lib/ui/screens/seller/seller_profile_screen.dart
+
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,9 +7,11 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/profile_provider.dart';
 import '../../../providers/settings_provider.dart';
-import '../../../data/models/user_model.dart';
+import '../../../data/models/seller_model.dart';
 import '../auth/widgets/settings_switch.dart';
 import '../auth/seller_login_screen.dart';
+import 'offers.dart';
+import 'seller_drawer.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   const SellerProfileScreen({super.key});
@@ -17,7 +21,19 @@ class SellerProfileScreen extends StatefulWidget {
 }
 
 class _SellerProfileScreenState extends State<SellerProfileScreen> {
-  final Color sellerColor = Colors.grey[600]!;
+  final Color sellerColor = const Color(0xFF64748B);
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final List<String> storeCategories = [
+    "Grocery",
+    "Electronics",
+    "Coffee Shops",
+    "Supermarkets",
+    "Supermarkets + Grocery",
+    "Restaurants",
+    "Bakery",
+    "Other"
+  ];
 
   @override
   void initState() {
@@ -76,7 +92,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
             bottom: MediaQuery.of(context).viewInsets.bottom,
             left: 20,
             right: 20,
-            top: 20),
+            top: 25), // 🟢 تعديل بسيط بالـ padding ليكون أرتب
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,52 +100,96 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
             Text("${t('edit')} $label",
                 style:
                     const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            if (fieldKey == 'address')
-              const Text(
-                "Go to Google Maps > Share > Copy link > then paste it here",
-                style: TextStyle(fontSize: 12, color: Colors.blueGrey),
-              ),
             const SizedBox(height: 15),
-            TextField(
-              controller: controller,
-              autofocus: true,
-              maxLines: fieldKey == 'description' ? 3 : 1,
-              keyboardType: fieldKey == 'phoneNumber'
-                  ? TextInputType.phone
-                  : TextInputType.text,
-              decoration: InputDecoration(
-                hintText: fieldKey == 'address'
-                    ? "http://maps.google.com/..."
-                    : "${t('edit')} $label",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: sellerColor, width: 2),
+
+            // 🟢 التعديل الجوهري: إذا كان الحقل هو category اعرض خيارات
+            if (fieldKey == 'category')
+              SizedBox(
+                height: 300, // ارتفاع مناسب للقائمة
+                child: ListView.separated(
+                  itemCount: storeCategories.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final cat = storeCategories[index];
+                    final isSelected = cat == currentValue;
+                    return ListTile(
+                      title: Text(cat,
+                          style: TextStyle(
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected ? sellerColor : null,
+                          )),
+                      trailing: isSelected
+                          ? Icon(Icons.check_circle, color: sellerColor)
+                          : null,
+                      onTap: () async {
+                        // تحديث الفايربيس فوراً عند الاختيار
+                        bool success = await profileProv.updateSingleField(
+                          uid: authProv.user!.uid,
+                          role: 'seller',
+                          fieldKey: fieldKey,
+                          value: cat,
+                        );
+                        if (success && mounted) Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              )
+            else ...[
+              // 🟢 إذا كان أي حقل آخر (اسم، هاتف، وصف) اعرض TextField
+              if (fieldKey == 'address')
+                const Text(
+                  "Go to Google Maps > Share > Copy link > then paste it here",
+                  style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: controller,
+                autofocus: true,
+                maxLines: fieldKey == 'description' ? 3 : 1,
+                keyboardType: fieldKey == 'phoneNumber'
+                    ? TextInputType.phone
+                    : TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: fieldKey == 'address'
+                      ? "Paste Map Link"
+                      : "${t('edit')} $label",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: sellerColor, width: 2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: sellerColor),
-                onPressed: () async {
-                  if (controller.text.trim().isEmpty) return;
-                  bool success = await profileProv.updateSingleField(
-                    uid: authProv.user!.uid,
-                    role: 'seller',
-                    fieldKey: fieldKey,
-                    value: controller.text.trim(),
-                  );
-                  if (success && mounted) Navigator.pop(context);
-                },
-                child: Text(t('save'),
-                    style: const TextStyle(color: Colors.white)),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: sellerColor,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  onPressed: () async {
+                    if (controller.text.trim().isEmpty) return;
+                    bool success = await profileProv.updateSingleField(
+                      uid: authProv.user!.uid,
+                      role: 'seller',
+                      fieldKey: fieldKey,
+                      value: controller.text.trim(),
+                    );
+                    if (success && mounted) Navigator.pop(context);
+                  },
+                  child: Text(t('save'),
+                      style: const TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
               ),
-            ),
+            ],
             const SizedBox(height: 20),
           ],
         ),
@@ -151,6 +211,9 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
           ? ui.TextDirection.rtl
           : ui.TextDirection.ltr,
       child: Scaffold(
+        key: _scaffoldKey,
+        // 🟢 التعديل: صار endDrawer عشان يفتح من اليمين
+        endDrawer: const SellerDrawer(),
         backgroundColor: isDark ? null : const Color(0xFFF8F9FA),
         body: profileProv.isLoading && seller == null
             ? Center(child: CircularProgressIndicator(color: sellerColor))
@@ -178,7 +241,13 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ]),
       child: Column(
         children: [
           _buildEditableField(t('store_name'), seller?.name ?? "Not Set",
@@ -194,7 +263,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                  color: sellerColor.withOpacity(0.1),
+                  color: sellerColor.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8)),
               child: Icon(Icons.location_on, color: sellerColor, size: 20),
             ),
@@ -211,7 +280,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                   fontWeight: FontWeight.w500,
                   color:
                       (seller?.address == null || seller?.address == "Not Set")
-                          ? Colors.red
+                          ? Colors.red[400]
                           : Colors.green),
             ),
             trailing: Wrap(
@@ -249,7 +318,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: sellerColor.withOpacity(0.1),
+            color: sellerColor.withOpacity(0.15),
             borderRadius: BorderRadius.circular(8)),
         child: Icon(icon, color: sellerColor, size: 20),
       ),
@@ -282,16 +351,33 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                 const BorderRadius.vertical(bottom: Radius.elliptical(200, 40)),
           ),
           child: SafeArea(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 15),
-                child: Text(t('seller_profile'),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold)),
-              ),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 15),
+                    child: Text(t('seller_profile'),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                Align(
+                  alignment: AlignmentDirectional.topEnd,
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(top: 10, end: 10),
+                    child: IconButton(
+                      icon: const Icon(Icons.menu_rounded,
+                          color: Colors.white, size: 28),
+                      // 🟢 التعديل: openEndDrawer عشان يفتح من اليمين
+                      onPressed: () =>
+                          _scaffoldKey.currentState?.openEndDrawer(),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -306,14 +392,15 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: 55,
-                        backgroundColor: Theme.of(context).cardColor,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         child: CircleAvatar(
                           radius: 50,
                           backgroundColor: Colors.grey[200],
                           key: ValueKey(currentPhotoUrl),
                           backgroundImage: (currentPhotoUrl != null &&
                                   currentPhotoUrl.isNotEmpty)
-                              ? NetworkImage(currentPhotoUrl)
+                              ? NetworkImage(currentPhotoUrl) as ImageProvider
                               : null,
                           child: profileProv.isLoading
                               ? const CircularProgressIndicator()
@@ -328,7 +415,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
                         bottom: 0,
                         right: 0,
                         child: CircleAvatar(
-                          backgroundColor: Colors.blueAccent,
+                          backgroundColor: sellerColor,
                           radius: 16,
                           child: IconButton(
                             padding: EdgeInsets.zero,
@@ -372,24 +459,48 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
   }
 
   Widget _buildThemesCard(BuildContext context, String Function(String) t) {
+    final settings = context.watch<SettingsProvider>();
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ],
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         children: [
           ListTile(
             leading: Icon(Icons.local_offer_outlined, color: sellerColor),
             title: Text(t('my_offers')),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {},
+            trailing: const Icon(Icons.arrow_forward_ios,
+                size: 16, color: Colors.grey),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ManageOffersScreen()));
+            },
           ),
           const Divider(height: 1, indent: 50),
-          const SettingsSwitch(
-              title: "Dark Mode",
-              icon: Icons.dark_mode_outlined,
-              isLanguage: false),
+
+          SwitchListTile(
+            activeColor: sellerColor,
+            secondary: Icon(Icons.dark_mode_outlined, color: sellerColor),
+            title: Text(t('dark_mode'),
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+            value: settings.isDarkMode,
+            onChanged: (bool value) {
+              settings.toggleTheme(value);
+            },
+          ),
+
           const Divider(height: 1, indent: 50),
           const SettingsSwitch(
               title: "Language", icon: Icons.language, isLanguage: true),
@@ -404,6 +515,12 @@ class _SellerProfileScreenState extends State<SellerProfileScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 2))
+          ],
           borderRadius: BorderRadius.circular(15)),
       child: Column(
         children: [

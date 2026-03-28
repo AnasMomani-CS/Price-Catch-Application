@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../user/user_main_layout.dart';
 import '../../user/user_profile_screen.dart';
 import '../reset_password_screen.dart';
 import '../user_seller_choice.dart';
@@ -144,10 +145,10 @@ class _UserLoginContentState extends State<UserLoginContent>
         content: TextField(
           controller: phoneController,
           maxLength: 9,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: "7XXXXXXXX",
             counterText: "",
-            prefixIcon: const Icon(Icons.phone_android),
+            prefixIcon: Icon(Icons.phone_android),
             prefixText: "+962 ",
             prefixStyle: TextStyle(
                 color: AppColors.userPrimary,
@@ -222,7 +223,7 @@ class _UserLoginContentState extends State<UserLoginContent>
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
                     borderSide:
-                        BorderSide(color: AppColors.userPrimary, width: 2)),
+                        const BorderSide(color: AppColors.userPrimary, width: 2)),
               ),
             ),
             const SizedBox(height: 10),
@@ -236,7 +237,7 @@ class _UserLoginContentState extends State<UserLoginContent>
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const UserProfileScreen()),
+                        builder: (context) => const UserMainLayout()),
                     (route) => false);
               }
             }, authProvider.isLoading),
@@ -277,7 +278,7 @@ class _UserLoginContentState extends State<UserLoginContent>
               ),
             ),
           ),
-          Positioned(top: 120, left: 30, child: TopText(role: AuthRole.user)),
+          const Positioned(top: 120, left: 30, child: TopText(role: AuthRole.user)),
           Padding(
             padding: const EdgeInsets.only(top: 240),
             child: Stack(
@@ -328,7 +329,7 @@ class _UserLoginContentState extends State<UserLoginContent>
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            ResetPasswordScreen()));
+                                            const ResetPasswordScreen()));
                               },
                               child: const Text("Forgot Password?",
                                   style: TextStyle(
@@ -346,11 +347,12 @@ class _UserLoginContentState extends State<UserLoginContent>
                               await authProvider.loginWithEmailAndPassword(
                                   _emailLogin.text, _passLogin.text);
                           if (success && context.mounted) {
+                            // 🟢 التعديل الثاني: الانتقال للـ Layout بعد تسجيل الدخول بالإيميل
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const UserProfileScreen()),
+                                        const UserMainLayout()),
                                 (route) => false);
                           }
                         }
@@ -432,11 +434,11 @@ class _UserLoginContentState extends State<UserLoginContent>
                       SlideTransition(
                         position: ChangeScreenAnimationUser
                             .createAccountAnimations[4],
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(
                               horizontal: 45, vertical: 10),
                           child: Row(
-                            children: const [
+                            children: [
                               Expanded(
                                   child: Divider(
                                       color: Colors.black45, thickness: 1)),
@@ -470,7 +472,7 @@ class _UserLoginContentState extends State<UserLoginContent>
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const UserProfileScreen()),
+                                              const UserMainLayout()),
                                       (route) => false);
                                 }
                               },
@@ -489,7 +491,7 @@ class _UserLoginContentState extends State<UserLoginContent>
               ],
             ),
           ),
-          Positioned(
+          const Positioned(
               bottom: 60,
               left: 0,
               right: 0,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/enums/auth_role.dart'; // لتمييز بائع أو مستخدم
+import '../../../../core/enums/auth_role.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../animations/change_screen_animation_user.dart';
 import '../animations/change_screen_animation_seller.dart';
@@ -21,7 +21,6 @@ class TopText extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
-        // التحقق من حالة اللوجن بناءً على Enum الخاص بكل طرف
         final bool isLogin = isUser
             ? ChangeScreenAnimationUser.currentScreen == UserAuthState.login
             : ChangeScreenAnimationSeller.currentScreen ==

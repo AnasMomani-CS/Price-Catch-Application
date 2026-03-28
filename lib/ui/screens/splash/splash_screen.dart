@@ -68,7 +68,6 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateAfterSplash() {
-    // التعديل الجوهري هنا:
     // ننتقل للـ AuthWrapper الموجود في الـ main.dart وهو اللي بقرر وين يروح اليوزر
     Navigator.pushReplacementNamed(context, '/auth_wrapper');
   }
