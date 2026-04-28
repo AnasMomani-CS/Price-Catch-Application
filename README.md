@@ -44,7 +44,7 @@ By monitoring the interaction between product discovery and physical store navig
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/AnasAlmomani/Price-Catch.git](https://github.com/AnasAlmomani/Price-Catch.git)
+    git clone (https://github.com/AnasMomani-CS/Price-Catch-Application/tree/main)
     ```
 2.  **Install dependencies:**
     ```bash
