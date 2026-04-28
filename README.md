@@ -40,15 +40,6 @@ By monitoring the interaction between product discovery and physical store navig
 
 ---
 
-## 📸 Demo & Screenshots
-
-| Home & Discovery | Seller Dashboard | Product Management |
-| :---: | :---: | :---: |
-| *[Insert Screenshot 1]* | *[Insert Screenshot 2]* | *[Insert Screenshot 3]* |
-
-
----
-
 ## 🏁 Getting Started
 
 1.  **Clone the repository:**
