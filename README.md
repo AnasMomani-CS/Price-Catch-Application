@@ -29,8 +29,6 @@ Price Catch is a robust cross-platform mobile application designed to bridge the
 * **Frontend:** Flutter & Dart (Clean Architecture)
 * **Backend:** Firebase (Authentication, Cloud Firestore)
 * **Local Storage:** SQLite
-* **APIs:** Geolocation Services, Google Maps Integration
-* **Version Control:** Git & GitHub
 
 ---
 
